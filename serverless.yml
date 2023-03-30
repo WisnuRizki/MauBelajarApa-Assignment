@@ -1,0 +1,95 @@
+service: MauBelajarApa
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+
+functions:
+  validateUser:
+    handler: helpers/jwt.validateUser
+  validateVendor:
+    handler: helpers/jwt.validateVendor
+  healthcheck:
+    handler: handlers/healthcheck.health
+    events:
+      - http:
+          path: /users
+          method: get
+          authorizer: validateUser
+  registerUser:
+    handler: handlers/user/userHandler.Register
+    events:
+      - http:
+          path: /users/register
+          method: post
+  loginUser:
+    handler: handlers/user/userHandler.Login
+    events:
+      - http:
+          path: /users/login
+          method: post
+  registerVendor:
+    handler: handlers/vendor/vendorHandler.RegisterVendor
+    events:
+      - http:
+          path: /vendor/register
+          method: post
+  loginVendor:
+    handler: handlers/vendor/vendorHandler.LoginVendor
+    events:
+      - http:
+          path: /vendor/login
+          method: post
+  createTransction:
+    handler: handlers/transactions/transactionHandler.createTransactions
+    events:
+      - http:
+          path: /transactions/create
+          method: post
+          authorizer: validateUser
+  getEnrollByUser:
+    handler: handlers/enroll/enrollHandler.getEnrollByUser
+    events:
+      - http:
+          path: /enroll
+          method: get
+          authorizer: validateUser
+  deleteEnroll:
+    handler: handlers/enroll/enrollHandler.deleteEnroll
+    events:
+      - http:
+          path: /enroll/{id}
+          method: delete
+          authorizer: validateUser
+  createCourse:
+    handler: handlers/course/courseHandler.createCourse
+    events:
+      - http:
+          path: /course
+          method: post
+          authorizer: validateVendor
+  deleteCourse:
+    handler: handlers/course/courseHandler.deleteCourse
+    events:
+      - http:
+          path: /course/{id}
+          method: delete
+          authorizer: validateVendor
+  updateCourse:
+    handler: handlers/course/courseHandler.updateCourse
+    events:
+      - http:
+          path: /course/{id}
+          method: put
+          authorizer: validateVendor
+  getAllCourseByVendor:
+    handler: handlers/course/courseHandler.getAllCourseByVendor
+    events:
+      - http:
+          path: /course
+          method: get
+          authorizer: validateVendor
+
